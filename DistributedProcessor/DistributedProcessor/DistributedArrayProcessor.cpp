@@ -1,6 +1,7 @@
 #include "DistributedArrayProcessor.h"
 #include <iostream>
 #include <mpi.h>
+#include <omp.h>
 
 #include "ArrayGenerator.h"
 
@@ -12,7 +13,7 @@ using namespace std;
 #define SLAVE_START_WORKING_CODE 4
 
 #define SLAVE_PRESENCE_CODE 100
-#define ARRAY_SIZE 100000
+#define ARRAY_SIZE 1000000
 
 DistributedArrayProcessor::DistributedArrayProcessor(int worldSize, int rank)
 {
@@ -39,6 +40,8 @@ void DistributedArrayProcessor::Start()
 void DistributedArrayProcessor::StartSlave()
 {
 	cout << "\n--- Slave started ---\n";
+
+	double startTime = omp_get_wtime();
 
 	// Send presence.
 
@@ -101,8 +104,20 @@ void DistributedArrayProcessor::StartSlave()
 
 		cout << "\n";*/
 
-		int result = 1;
+		// Processing.
+
+		int result = 0;
+
+		result = ProcessData(array, arraySize);
+
+		cout << "S: ready\n";
+
+		// End of processing.
+
 		MPI_Send(&result, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+
+		double endTime = omp_get_wtime();
+		cout << "S: work time " << endTime - startTime << endl;
 	}
 	else
 	{
@@ -113,6 +128,8 @@ void DistributedArrayProcessor::StartSlave()
 void DistributedArrayProcessor::StartMaster()
 {
 	cout << "\n--- Master started ---\n";
+
+	double startTime = omp_get_wtime();
 
 	// Wait for slaves.
 	//byte buffer1;
@@ -130,13 +147,12 @@ void DistributedArrayProcessor::StartMaster()
 		MPI_Send(&buffer, 1, MPI_BYTE, i, 0, MPI_COMM_WORLD);
 	}
 
-
 	// Create array.
 
 	int *array = new int[ARRAY_SIZE];
 
 	ArrayGenerator *generator = new ArrayGenerator();
-	generator->MaxValue = 100;
+	generator->MaxValue = 10;
 	generator->Generate(array, ARRAY_SIZE);
 
 	if (ARRAY_SIZE < 10) 
@@ -196,26 +212,47 @@ void DistributedArrayProcessor::StartMaster()
 		MPI_Send(&buffer, 1, MPI_BYTE, i, 0, MPI_COMM_WORLD);
 	}
 
+	// Calculate data itself.
+
+	int masterResult = 0;//ProcessData(array, ARRAY_SIZE);
+
 	// Wait for results.
 
 	int *results = new int[WorldSize];
+	int slavesResult = 0;
 
 	for (int i = 1; i < WorldSize; i++)
 	{
-		int receivedStatus = 0;
+		int receivedValue = 0;
 		MPI_Status status;
 
-		MPI_Recv(&receivedStatus, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
-		results[status.MPI_SOURCE] = receivedStatus;
+		MPI_Recv(&receivedValue, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+		results[status.MPI_SOURCE] = receivedValue;
+		slavesResult += receivedValue;
 	}
 
 	cout << "M: results received!\n";
 
+	double endTime = omp_get_wtime();
+	cout << "M: work time " << endTime - startTime << endl;
+
 	// Print results.
 
-	for (int i = 1; i < WorldSize; i++)
+	/*for (int i = 1; i < WorldSize; i++)
 	{
 		cout << "Result " << i << ": " << results[i] << endl;
+	}*/
+
+	cout << "M: my result is \t" << masterResult << endl;
+	cout << "M: slaves result is \t" << slavesResult << endl;
+
+	if(masterResult == slavesResult)
+	{
+		cout << "M: results are correct!\n";
+	}
+	else
+	{
+		cout << "M: results are NOT correct!\n";
 	}
 
 	cout << "M: done!\n";
@@ -244,3 +281,16 @@ void DistributedArrayProcessor::SendToAll(byte* data)
 		MPI_Send(data, 1, MPI_BYTE, i, 0, MPI_COMM_WORLD);
 	}
 }
+
+int DistributedArrayProcessor::ProcessData(int* array, int size)
+{
+	int result = 0;
+
+	for (int i = 0; i < size; i++)
+	{
+		result += array[i] * i;
+	}
+
+	return result;
+}
+

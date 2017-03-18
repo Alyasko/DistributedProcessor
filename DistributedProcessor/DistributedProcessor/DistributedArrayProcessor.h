@@ -16,5 +16,6 @@ private:
 
 	void WaitForSlaves(byte requiredCode, char* errorMessage);
 	void SendToAll(byte *data);
+	int ProcessData(int *array, int size);
 };
 
