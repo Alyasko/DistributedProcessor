@@ -21,7 +21,7 @@ Master::~Master()
 
 void Master::Run()
 {
-	cout << "\n--- Master started ---\n";
+	//cout << "\n--- Master started ---\n";
 
 	double startTime = omp_get_wtime();
 
@@ -31,7 +31,7 @@ void Master::Run()
 
 	WaitForSlaves(SLAVE_PRESENCE_CODE, "M: slave sent incorrect presence code\n");
 
-	cout << "M: everybody is present\n";
+	//cout << "M: everybody is present\n";
 
 	// Slaves listen for array size.
 
@@ -54,30 +54,30 @@ void Master::Run()
 	{
 		for (int i = 0; i < ARRAY_SIZE; i++)
 		{
-			cout << array[i] << " ";
+			//cout << array[i] << " ";
 		}
 
-		cout << "\n";
+		//cout << "\n";
 	}
 
 	if (DistributedArrayProcessor::WorldSize == 1)
 	{
 		// Only master exists.
 
-		cout << "M: master is alone, doing by itself.\n";
+		//cout << "M: master is alone, doing by itself.\n";
 
 		int result = ProcessData(array, ARRAY_SIZE);
 
-		cout << "Result is " << result << endl;
+		//cout << "Result is " << result << endl;
 
 		double endTime = omp_get_wtime();
-		cout << "M: work time " << endTime - startTime << endl;
+		//cout << "M: work time " << endTime - startTime << endl;
 	}
 	else
 	{
 		// Broadcast size.
 
-		cout << "M: sending array size\n";
+		//cout << "M: sending array size\n";
 
 		int worldSize = DistributedArrayProcessor::WorldSize;
 
@@ -110,7 +110,7 @@ void Master::Run()
 
 		// Send array parts.
 
-		cout << "M: sending arrays\n";
+		//cout << "M: sending arrays\n";
 
 		int startIndex = unitSizes[0];
 
@@ -127,7 +127,7 @@ void Master::Run()
 
 		// Start working.
 
-		cout << "M: start each slave\n";
+		//cout << "M: start each slave\n";
 
 		buffer = SLAVE_START_WORKING_CODE;
 
@@ -138,9 +138,9 @@ void Master::Run()
 
 		// Do own work.
 
-		cout << "M: array size is " << unitSizes[0] << endl;
+		//cout << "M: array size is " << unitSizes[0] << endl;
 		int myResult = ProcessData(array, unitSizes[0]);
-		cout << "M: my work is done\n";
+		//cout << "M: my work is done\n";
 
 		// Calculate data itself.
 
@@ -161,31 +161,31 @@ void Master::Run()
 			slavesResult += receivedValue;
 		}
 
-		cout << "M: results received!\n";
+		//cout << "M: results received!\n";
 
 		double endTime = omp_get_wtime();
-		cout << "M: work time " << endTime - startTime << endl;
+		//cout << "M: work time " << endTime - startTime << endl;
 
 		// Print results.
 
 		/*for (int i = 1; i < WorldSize; i++)
 		{
-		cout << "Result " << i << ": " << results[i] << endl;
+		//cout << "Result " << i << ": " << results[i] << endl;
 		}*/
 
-		cout << "M: my result is \t" << masterResult << endl;
-		cout << "M: slaves result is \t" << slavesResult << endl;
+		//cout << "M: my result is \t" << masterResult << endl;
+		//cout << "M: slaves result is \t" << slavesResult << endl;
 
 		if (masterResult == slavesResult)
 		{
-			cout << "M: results are correct!\n";
+			//cout << "M: results are correct!\n";
 		}
 		else
 		{
-			cout << "M: results are NOT correct!\n";
+			//cout << "M: results are NOT correct!\n";
 		}
 
-		std::cout << "M: done!\n";
+		//cout << "M: done!\n";
 	}
 }
 
@@ -198,7 +198,7 @@ void Master::WaitForSlaves(byte requiredCode, char* errorMessage)
 		MPI_Recv(&groupBuffer[i], 1, MPI_BYTE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		if (groupBuffer[i] != requiredCode)
 		{
-			cout << errorMessage;
+			//cout << errorMessage;
 		}
 	}
 

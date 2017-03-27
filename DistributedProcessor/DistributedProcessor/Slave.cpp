@@ -19,7 +19,7 @@ Slave::~Slave()
 
 void Slave::Run()
 {
-	cout << "\n--- Slave started ---\n";
+	//cout << "\n--- Slave started ---\n";
 
 	double startTime = omp_get_wtime();
 
@@ -28,7 +28,7 @@ void Slave::Run()
 	byte buffer = SLAVE_PRESENCE_CODE;
 	MPI_Send(&buffer, 1, MPI_BYTE, 0, 0, MPI_COMM_WORLD);
 
-	cout << "S: presence sent\n";
+	//cout << "S: presence sent\n";
 
 	// Wait for command to listen array size.
 
@@ -36,11 +36,11 @@ void Slave::Run()
 
 	if (buffer == SLAVE_LISTEN_FOR_ARRAY_SIZE)
 	{
-		cout << "S: waiting for array size...\n";
+		//cout << "S: waiting for array size...\n";
 	}
 	else
 	{
-		cout << "S: broadcast error\n";
+		//cout << "S: broadcast error\n";
 	}
 
 
@@ -49,7 +49,7 @@ void Slave::Run()
 	int arraySize = 0;
 	MPI_Recv(&arraySize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	cout << "S: size is " << arraySize << "\n";
+	//cout << "S: size is " << arraySize << "\n";
 
 
 	// Send array size received code.
@@ -63,7 +63,7 @@ void Slave::Run()
 	int *array = new int[arraySize];
 	MPI_Recv(array, arraySize, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	cout << "S: array received\n";
+	//cout << "S: array received\n";
 
 	// Send array received code.
 
@@ -75,14 +75,14 @@ void Slave::Run()
 	MPI_Recv(&buffer, 1, MPI_BYTE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	if (buffer == SLAVE_START_WORKING_CODE)
 	{
-		cout << "S: working...\n";
+		//cout << "S: working...\n";
 
 		/*for(int i = 0; i < arraySize; i++)
 		{
-		cout << array[i] << " ";
+		//cout << array[i] << " ";
 		}
 
-		cout << "\n";*/
+		//cout << "\n";*/
 
 		// Processing.
 
@@ -90,17 +90,17 @@ void Slave::Run()
 
 		result = ProcessData(array, arraySize);
 
-		cout << "S: ready\n";
+		//cout << "S: ready\n";
 
 		// End of processing.
 
 		MPI_Send(&result, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
 		double endTime = omp_get_wtime();
-		cout << "S: work time " << endTime - startTime << endl;
+		//cout << "S: work time " << endTime - startTime << endl;
 	}
 	else
 	{
-		std::cout << "S: incorrect start working code received\n";
+		//cout << "S: incorrect start working code received\n";
 	}
 }
