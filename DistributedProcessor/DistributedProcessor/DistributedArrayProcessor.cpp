@@ -2,6 +2,7 @@
 #include <iostream>
 #include <mpi.h>
 #include <omp.h>
+#include "Windows.h"
 
 #include "ArrayGenerator.h"
 #include "Slave.h"
@@ -24,6 +25,19 @@ DistributedArrayProcessor::~DistributedArrayProcessor()
 
 void DistributedArrayProcessor::Start()
 {
+
+	if (Rank == 0)
+	{
+		uint32_t pid = GetCurrentProcessId();
+		cout << "M: My PID is " << pid << endl;
+
+		int number = 0;
+		cout << "Please input number: ";
+		cin >> number;
+	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
 	if (Rank != 0)
 	{
 		Slave *slave = new Slave();
@@ -31,6 +45,7 @@ void DistributedArrayProcessor::Start()
 	}
 	else
 	{
+
 		Master *master = new Master();
 		master->Run();
 	}

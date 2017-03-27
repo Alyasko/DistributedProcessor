@@ -3,6 +3,7 @@
 #include <omp.h>
 #include "DistributedArrayProcessor.h"
 #include <mpi.h>
+
 #include "ArrayGenerator.h"
 
 using namespace std;
@@ -68,6 +69,9 @@ void Master::Run()
 		int result = ProcessData(array, ARRAY_SIZE);
 
 		cout << "Result is " << result << endl;
+
+		double endTime = omp_get_wtime();
+		cout << "M: work time " << endTime - startTime << endl;
 	}
 	else
 	{
@@ -75,11 +79,29 @@ void Master::Run()
 
 		cout << "M: sending array size\n";
 
-		int arraySizePerSlave = ARRAY_SIZE / (DistributedArrayProcessor::WorldSize - 1);
+		int worldSize = DistributedArrayProcessor::WorldSize;
 
-		for (int i = 1; i < DistributedArrayProcessor::WorldSize; i++)
+		int sizeForUnit = ARRAY_SIZE / worldSize;
+		int remainder = ARRAY_SIZE % worldSize;
+
+		if(remainder != 0)
 		{
-			MPI_Send(&arraySizePerSlave, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+			sizeForUnit++;
+		}
+
+		int *unitSizes = new int[sizeForUnit];
+
+		for (int i = 0; i < DistributedArrayProcessor::WorldSize; i++)
+		{
+			int subtract = ARRAY_SIZE - i * sizeForUnit;
+			int unitSize = subtract >= sizeForUnit ? sizeForUnit : subtract;
+
+			unitSizes[i] = unitSize;
+
+			if (i != 0) 
+			{
+				MPI_Send(&unitSize, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+			}
 		}
 
 		// Wait for slaves array size received code.
@@ -90,17 +112,13 @@ void Master::Run()
 
 		cout << "M: sending arrays\n";
 
+		int startIndex = unitSizes[0];
+
 		for (int i = 1; i < DistributedArrayProcessor::WorldSize; i++)
 		{
-			int countToSend = arraySizePerSlave;
-			int startIndex = (i - 1) * arraySizePerSlave;
+			MPI_Send(array + startIndex, unitSizes[i], MPI_INT, i, 0, MPI_COMM_WORLD);
 
-			if (startIndex + countToSend > ARRAY_SIZE - 1)
-			{
-				countToSend = ARRAY_SIZE - startIndex;
-			}
-
-			MPI_Send(array + startIndex, countToSend, MPI_INT, i, 0, MPI_COMM_WORLD);
+			startIndex += unitSizes[i];
 		}
 
 		// Wait for slaves array received code.
@@ -118,14 +136,20 @@ void Master::Run()
 			MPI_Send(&buffer, 1, MPI_BYTE, i, 0, MPI_COMM_WORLD);
 		}
 
+		// Do own work.
+
+		cout << "M: array size is " << unitSizes[0] << endl;
+		int myResult = ProcessData(array, unitSizes[0]);
+		cout << "M: my work is done\n";
+
 		// Calculate data itself.
 
 		int masterResult = 0;//ProcessData(array, ARRAY_SIZE);
 
-							 // Wait for results.
+		// Wait for results.
 
 		int *results = new int[DistributedArrayProcessor::WorldSize];
-		int slavesResult = 0;
+		int slavesResult = myResult;
 
 		for (int i = 1; i < DistributedArrayProcessor::WorldSize; i++)
 		{

@@ -21,7 +21,7 @@ protected:
 
 		for (int i = 0; i < size; i++)
 		{
-			result += array[i] * i;
+			result += array[i];
 		}
 
 		return result;
