@@ -1,0 +1,12 @@
+Array size: 1000000, World size: 10, Time: 0.0721769
+Array size: 1000000, World size: 16, Time: 0.0778052
+Array size: 1000000, World size: 1, Time: 0.079242
+Array size: 1000000, World size: 2, Time: 0.0726937
+Array size: 1000000, World size: 32, Time: 0.0750087
+Array size: 1000000, World size: 3, Time: 0.0741998
+Array size: 1000000, World size: 4, Time: 0.0753941
+Array size: 1000000, World size: 5, Time: 0.0731529
+Array size: 1000000, World size: 6, Time: 0.071453
+Array size: 1000000, World size: 7, Time: 0.0708841
+Array size: 1000000, World size: 8, Time: 0.0720006
+

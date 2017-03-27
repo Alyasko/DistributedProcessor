@@ -75,6 +75,8 @@ void Master::Run()
 
 		double endTime = omp_get_wtime();
 		//cout << "M: work time " << endTime - startTime << endl;
+
+		cout << "Array size: " << ArraySize << ", World size: " << DistributedArrayProcessor::WorldSize << ", Time: " << endTime - startTime << endl;
 	}
 	else
 	{
@@ -168,6 +170,7 @@ void Master::Run()
 
 		double endTime = omp_get_wtime();
 		//cout << "M: work time " << endTime - startTime << endl;
+		cout << "Array size: " << ArraySize << ", World size: " << DistributedArrayProcessor::WorldSize << ", Time: " << endTime - startTime << endl;
 
 		// Print results.
 

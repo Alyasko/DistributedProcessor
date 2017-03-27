@@ -1,0 +1,72 @@
+Array size: 100, World size: 1, Time: 1.65743e-05
+Array size: 100, World size: 2, Time: 0.000252231
+Array size: 100, World size: 3, Time: 0.000763623
+Array size: 100, World size: 4, Time: 0.000589744
+Array size: 100, World size: 5, Time: 0.000524351
+Array size: 100, World size: 6, Time: 0.000560513
+Array size: 100, World size: 7, Time: 0.000626509
+Array size: 100, World size: 8, Time: 0.000775677
+Array size: 100, World size: 10, Time: 0.000953474
+
+job aborted:
+[ranks] message
+
+[0] fatal error
+Fatal error in MPI_Send: Invalid count, error stack:
+MPI_Send(buf=0x006C64E0, count=-5, MPI_INT, dest=15, tag=0, MPI_COMM_WORLD) failed
+Negative count, value is -5
+
+[1-15] terminated
+
+---- error analysis -----
+
+[0] on ALEXANER-PC
+mpi has detected a fatal error and aborted DistributedProcessor
+
+---- error analysis -----
+
+job aborted:
+[ranks] message
+
+[0] fatal error
+Fatal error in MPI_Send: Invalid count, error stack:
+MPI_Send(buf=0x01197370, count=-4, MPI_INT, dest=26, tag=0, MPI_COMM_WORLD) failed
+Negative count, value is -4
+
+[1-31] terminated
+
+---- error analysis -----
+
+[0] on ALEXANER-PC
+mpi has detected a fatal error and aborted DistributedProcessor
+
+---- error analysis -----
+Array size: 100000, World size: 1, Time: 0.0153159
+Array size: 100000, World size: 2, Time: 0.0079189
+Array size: 100000, World size: 3, Time: 0.00835134
+Array size: 100000, World size: 5, Time: 0.00777998
+Array size: 100000, World size: 6, Time: 0.00822929
+Array size: 100000, World size: 7, Time: 0.00758018
+Array size: 100000, World size: 10, Time: 0.00796139
+Array size: 100000, World size: 32, Time: 0.0102034
+Array size: 1000000, World size: 1, Time: 0.0732554
+Array size: 1000000, World size: 2, Time: 0.0736005
+Array size: 1000000, World size: 4, Time: 0.072505
+Array size: 1000000, World size: 5, Time: 0.0724713
+Array size: 1000000, World size: 6, Time: 0.0738699
+Array size: 1000000, World size: 7, Time: 0.0710854
+Array size: 1000000, World size: 8, Time: 0.0728796
+Array size: 1000000, World size: 10, Time: 0.0721609
+Array size: 10000000, World size: 1, Time: 0.734319
+Array size: 10000000, World size: 2, Time: 0.734871
+Array size: 10000000, World size: 3, Time: 0.735709
+Array size: 10000000, World size: 5, Time: 0.723208
+Array size: 10000000, World size: 6, Time: 0.715298
+Array size: 10000000, World size: 7, Time: 0.714623
+Array size: 10000000, World size: 16, Time: 0.718846
+Array size: 100000000, World size: 2, Time: 7.38815
+Array size: 100000000, World size: 3, Time: 7.32644
+Array size: 100000000, World size: 4, Time: 7.34603
+Array size: 100000000, World size: 5, Time: 7.20131
+Array size: 100000000, World size: 8, Time: 7.19411
+Array size: 100000000, World size: 10, Time: 7.19458

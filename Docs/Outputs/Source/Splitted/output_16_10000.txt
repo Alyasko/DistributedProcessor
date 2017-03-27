@@ -1,0 +1,1 @@
+Array size: 100000, World size: 16, Time: 0.00890643
