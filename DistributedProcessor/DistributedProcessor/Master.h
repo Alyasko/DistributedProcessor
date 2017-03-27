@@ -8,6 +8,7 @@ public:
 	Master();
 	~Master();
 	void Run() override;
+	static int ArraySize;
 private:
 	void WaitForSlaves(byte requiredCode, char* errorMessage);
 };

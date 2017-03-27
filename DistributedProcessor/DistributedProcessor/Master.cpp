@@ -10,6 +10,8 @@ using namespace std;
 
 #define ARRAY_SIZE 100
 
+int Master::ArraySize;
+
 Master::Master() {
 
 }
@@ -43,16 +45,17 @@ void Master::Run()
 
 	// Create array.
 
-	int *array = new int[ARRAY_SIZE];
+
+	int *array = new int[ArraySize];
 
 	ArrayGenerator *generator = new ArrayGenerator();
 	generator->FrozenValues = true;
 	generator->MaxValue = 10;
-	generator->Generate(array, ARRAY_SIZE);
+	generator->Generate(array, ArraySize);
 
-	if (ARRAY_SIZE < 10)
+	if (ArraySize < 10)
 	{
-		for (int i = 0; i < ARRAY_SIZE; i++)
+		for (int i = 0; i < ArraySize; i++)
 		{
 			//cout << array[i] << " ";
 		}
@@ -66,7 +69,7 @@ void Master::Run()
 
 		//cout << "M: master is alone, doing by itself.\n";
 
-		int result = ProcessData(array, ARRAY_SIZE);
+		int result = ProcessData(array, ArraySize);
 
 		//cout << "Result is " << result << endl;
 
@@ -81,8 +84,8 @@ void Master::Run()
 
 		int worldSize = DistributedArrayProcessor::WorldSize;
 
-		int sizeForUnit = ARRAY_SIZE / worldSize;
-		int remainder = ARRAY_SIZE % worldSize;
+		int sizeForUnit = ArraySize / worldSize;
+		int remainder = ArraySize % worldSize;
 
 		if(remainder != 0)
 		{
@@ -93,7 +96,7 @@ void Master::Run()
 
 		for (int i = 0; i < DistributedArrayProcessor::WorldSize; i++)
 		{
-			int subtract = ARRAY_SIZE - i * sizeForUnit;
+			int subtract = ArraySize - i * sizeForUnit;
 			int unitSize = subtract >= sizeForUnit ? sizeForUnit : subtract;
 
 			unitSizes[i] = unitSize;
