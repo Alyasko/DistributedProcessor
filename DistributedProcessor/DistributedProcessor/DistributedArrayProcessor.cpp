@@ -26,7 +26,7 @@ DistributedArrayProcessor::~DistributedArrayProcessor()
 void DistributedArrayProcessor::Start()
 {
 
-	/*if (Rank == 0)
+	if (Rank == 0)
 	{
 		uint32_t pid = GetCurrentProcessId();
 		cout << "M: My PID is " << pid << endl;
@@ -36,7 +36,7 @@ void DistributedArrayProcessor::Start()
 		cin >> number;
 	}
 
-	MPI_Barrier(MPI_COMM_WORLD);*/
+	MPI_Barrier(MPI_COMM_WORLD);
 
 	if (Rank != 0)
 	{

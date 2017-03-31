@@ -4,6 +4,8 @@
 #include <mpi.h>
 
 #include "DistributedArrayProcessor.h"
+#include "Master.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -49,8 +51,7 @@ void Slave::Run()
 	int arraySize = 0;
 	MPI_Recv(&arraySize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	//cout << "S: size is " << arraySize << "\n";
-
+	cout << "S: size is " << arraySize << "\n";
 
 	// Send array size received code.
 
@@ -88,7 +89,35 @@ void Slave::Run()
 
 		int result = 0;
 
-		result = ProcessData(array, arraySize);
+		if (arraySize > 0)
+		{
+			if(Master::ThreadsCount > 1)
+			{
+				int *unitSizes = new int[Master::ThreadsCount];
+
+				Utils::SplitArray(unitSizes, Master::ThreadsCount, arraySize);
+
+				omp_set_num_threads(Master::ThreadsCount);
+				#pragma omp parallel for reduction(+:result)
+				for(int i = 0; i < Master::ThreadsCount; i++)
+				{
+					int startIndex = 0;
+
+					for(int j = 0; j < i; j++)
+					{
+						startIndex += unitSizes[j];
+					}
+
+					result += ProcessData(array + startIndex, unitSizes[i]);
+				}
+			} 
+			else
+			{
+				result = ProcessData(array, arraySize);
+			}
+
+			
+		}
 
 		//cout << "S: ready\n";
 

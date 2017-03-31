@@ -6,6 +6,8 @@
 
 #define SLAVE_PRESENCE_CODE 100
 
+#include "cmath"
+
 #pragma once
 class RelationalEntity {
 public:
@@ -21,7 +23,7 @@ protected:
 
 		for (int i = 0; i < size; i++)
 		{
-			result += array[i];
+			result += array[i] * sin(sqrt(i * 1000 / size)) * cos(sqrt(i * 100 / size)) * sqrt(tan(i));
 		}
 
 		return result;
