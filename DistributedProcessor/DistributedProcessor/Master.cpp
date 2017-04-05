@@ -123,7 +123,7 @@ void Master::Run()
 
 	// Do own work.
 
-	cout << "M: array size is " << unitSizes[0] << endl;
+	//cout << "M: array size is " << unitSizes[0] << endl;
 
 	int myResult = 0;
 
@@ -182,7 +182,8 @@ void Master::Run()
 
 	double endTime = omp_get_wtime();
 	//cout << "M: work time " << endTime - startTime << endl;
-	cout << "Array size: " << ArraySize << ", World size: " << DistributedArrayProcessor::WorldSize << ", Time: " << endTime - startTime << endl;
+	cout << endTime - startTime << endl;
+	//cout << "Array size: " << ArraySize << ", World size: " << DistributedArrayProcessor::WorldSize << ", Time: " << endTime - startTime << endl;
 
 	// Print results.
 
@@ -191,8 +192,8 @@ void Master::Run()
 	//cout << "Result " << i << ": " << results[i] << endl;
 	}*/
 
-	cout << "M: control result is \t" << masterResult << endl;
-	cout << "M: slaves result is \t" << slavesResult << endl;
+	//cout << "M: control result is \t" << masterResult << endl;
+	//cout << "M: slaves result is \t" << slavesResult << endl;
 
 	if (masterResult == slavesResult)
 	{

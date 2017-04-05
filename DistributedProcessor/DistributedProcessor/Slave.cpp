@@ -51,7 +51,7 @@ void Slave::Run()
 	int arraySize = 0;
 	MPI_Recv(&arraySize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	cout << "S: size is " << arraySize << "\n";
+	//cout << "S: size is " << arraySize << "\n";
 
 	// Send array size received code.
 
