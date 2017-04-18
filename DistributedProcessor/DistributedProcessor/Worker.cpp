@@ -4,6 +4,7 @@
 #include "mpi.h"
 
 #include "DistributedArrayProcessor.h"
+#include "Master.h"
 
 Worker::Worker()
 {
@@ -12,6 +13,19 @@ Worker::Worker()
 
 Worker::~Worker()
 {
+}
+
+void Worker::CommandLineInit(int argc, char** argv)
+{
+	if (argc >= 2)
+	{
+		sscanf(argv[1], "%d", &Master::ArraySize);
+	}
+
+	if (argc >= 3)
+	{
+		sscanf(argv[2], "%d", &Master::ThreadsCount);
+	}
 }
 
 void Worker::Run()

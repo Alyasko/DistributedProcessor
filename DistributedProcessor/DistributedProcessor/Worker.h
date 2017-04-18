@@ -6,5 +6,6 @@ public:
 	~Worker();
 
 	void Run();
+	void CommandLineInit(int argc, char** argv);
 };
 

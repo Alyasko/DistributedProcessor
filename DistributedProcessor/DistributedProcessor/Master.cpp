@@ -6,6 +6,7 @@
 
 #include "ArrayGenerator.h"
 #include "Utils.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -25,7 +26,7 @@ Master::~Master()
 
 void Master::Run()
 {
-	//cout << "\n--- Master started ---\n";
+	Logger::Log("\n--- Master started ---\n"); // //cout << "\n--- Master started ---\n";
 
 	// Wait for slaves.
 	//byte buffer1;
@@ -37,7 +38,7 @@ void Master::Run()
 	{
 		WaitForSlaves(SLAVE_PRESENCE_CODE, "M: slave sent incorrect presence code\n");
 
-		//cout << "M: everybody is present\n";
+		Logger::Log("M: everybody is present\n"); // //cout << "M: everybody is present\n";
 
 		// Slaves listen for array size.
 
@@ -68,12 +69,12 @@ void Master::Run()
 			//cout << array[i] << " ";
 		}
 
-		//cout << "\n";
+		Logger::Log("\n"); // //cout << "\n";
 	}
 
 	// Broadcast size.
 
-	//cout << "M: sending array size\n";
+	Logger::Log("M: sending array size\n"); // //cout << "M: sending array size\n";
 
 	Utils::SplitArray(unitSizes, worldSize, ArraySize);
 
@@ -93,7 +94,7 @@ void Master::Run()
 
 		// Send array parts.
 
-		//cout << "M: sending arrays\n";
+		Logger::Log("M: sending arrays\n"); // //cout << "M: sending arrays\n";
 
 		int startIndex = unitSizes[0];
 
@@ -110,7 +111,7 @@ void Master::Run()
 
 		// Start working.
 
-		//cout << "M: start each slave\n";
+		Logger::Log("M: start each slave\n"); // //cout << "M: start each slave\n";
 
 		buffer = SLAVE_START_WORKING_CODE;
 
@@ -123,7 +124,7 @@ void Master::Run()
 
 	// Do own work.
 
-	//cout << "M: array size is " << unitSizes[0] << endl;
+	Logger::Log("M: array size is %d\n", unitSizes[0]);
 
 	int myResult = 0;
 
@@ -148,8 +149,8 @@ void Master::Run()
 			int threadNum = omp_get_thread_num();
 			int threadsNum = omp_get_num_threads();
 
-			//cout << "Start index: " << startIndex << endl;
-			//cout << threadsNum << endl;
+			// Logger::Log("Start index: %d\n", startIndex);
+			// Logger::Log("Threads num: %d\n", threadsNum);
 		}
 	}
 	else
@@ -157,7 +158,7 @@ void Master::Run()
 		myResult += ProcessData(array, unitSizes[0]);
 	}
 
-	//cout << "M: my work is done\n";
+	Logger::Log("M: my work is done\n");
 
 	// Calculate data itself.
 
@@ -178,12 +179,12 @@ void Master::Run()
 		slavesResult += receivedValue;
 	}
 
-	//cout << "M: results received!\n";
+	Logger::Log("M: results received!\n"); // //cout << "M: results received!\n";
 
 	double endTime = omp_get_wtime();
-	//cout << "M: work time " << endTime - startTime << endl;
-	cout << endTime - startTime << endl;
-	//cout << "Array size: " << ArraySize << ", World size: " << DistributedArrayProcessor::WorldSize << ", Time: " << endTime - startTime << endl;
+	Logger::Log("M: work time %f\n", ProductionPrint, endTime - startTime);
+
+	Logger::Log("Array size: %d, World size %d, Time: %f\n", DebugPrint, ArraySize, DistributedArrayProcessor::WorldSize, endTime - startTime);
 
 	// Print results.
 
@@ -192,19 +193,19 @@ void Master::Run()
 	//cout << "Result " << i << ": " << results[i] << endl;
 	}*/
 
-	//cout << "M: control result is \t" << masterResult << endl;
-	//cout << "M: slaves result is \t" << slavesResult << endl;
+	Logger::Log("M: control result is \t%d\n", DebugPrint, masterResult);
+	Logger::Log("M: slaves result is \t%d\n", DebugPrint, slavesResult);
 
 	if (masterResult == slavesResult)
 	{
-		//cout << "M: results are correct!\n";
+		Logger::Log("M: results are correct!\n", DebugPrint); // //cout << "M: results are correct!\n";
 	}
 	else
 	{
-		//cout << "M: results are NOT correct!\n";
+		Logger::Log("M: results are NOT correct!\n"); // //cout << "M: results are NOT correct!\n";
 	}
 
-	//cout << "M: done!\n";
+	Logger::Log("M: done!\n"); // //cout << "M: done!\n";
 }
 
 void Master::WaitForSlaves(byte requiredCode, char* errorMessage)
