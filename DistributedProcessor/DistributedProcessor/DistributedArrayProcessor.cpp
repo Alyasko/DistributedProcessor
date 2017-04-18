@@ -7,16 +7,19 @@
 #include "ArrayGenerator.h"
 #include "Slave.h"
 #include "Master.h"
+#include "Logger.h"
 
 using namespace std;
 
 int DistributedArrayProcessor::WorldSize;
 int DistributedArrayProcessor::Rank;
+bool DistributedArrayProcessor::DebugMode;
 
 DistributedArrayProcessor::DistributedArrayProcessor(int worldSize, int rank)
 {
 	WorldSize = worldSize;
 	Rank = rank;
+	DebugMode = false;
 }
 
 DistributedArrayProcessor::~DistributedArrayProcessor()
@@ -25,19 +28,31 @@ DistributedArrayProcessor::~DistributedArrayProcessor()
 
 void DistributedArrayProcessor::Start()
 {
+	CheckDebugMode();
+	Execute();
+}
 
-	/*if (Rank == 0)
+void DistributedArrayProcessor::CheckDebugMode()
+{
+	if (DebugMode == true)
 	{
-		uint32_t pid = GetCurrentProcessId();
-		cout << "M: My PID is " << pid << endl;
+		if (Rank == 0)
+		{
+			uint32_t pid = GetCurrentProcessId();
+			Logger::Log("M: My PID is %d\n", pid);
 
-		int number = 0;
-		cout << "Please input number: ";
-		cin >> number;
+			int number = 0;
+
+			Logger::Log("Please input number: \n");
+			cin >> number;
+		}
+
+		MPI_Barrier(MPI_COMM_WORLD);
 	}
+}
 
-	MPI_Barrier(MPI_COMM_WORLD);*/
-
+void DistributedArrayProcessor::Execute()
+{
 	if (Rank != 0)
 	{
 		Slave *slave = new Slave();
@@ -45,18 +60,7 @@ void DistributedArrayProcessor::Start()
 	}
 	else
 	{
-
 		Master *master = new Master();
 		master->Run();
 	}
 }
-
-
-void DistributedArrayProcessor::SendToAll(byte* data)
-{
-	for (int i = 1; i < Rank; i++)
-	{
-		MPI_Send(data, 1, MPI_BYTE, i, 0, MPI_COMM_WORLD);
-	}
-}
-

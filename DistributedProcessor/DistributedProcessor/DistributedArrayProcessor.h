@@ -10,7 +10,9 @@ public:
 	void Start();
 	static int WorldSize;
 	static int Rank;
+	static bool DistributedArrayProcessor::DebugMode;
 private:
-	void SendToAll(byte *data);
+	void CheckDebugMode();
+	void Execute();
 };
 
