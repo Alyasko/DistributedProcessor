@@ -54,3 +54,10 @@ processes: 16
 6.93509
 6.92767
 6.93226
+processes: 1 
+processes: 2 
+processes: 4 
+processes: 8 
+processes: 10 
+processes: 12 
+processes: 16 

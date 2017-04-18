@@ -54,3 +54,11 @@ processes: 16
 7.03777
 7.30314
 7.91326
+processes: 1 
+processes: 1 
+processes: 2 
+processes: 4 
+processes: 8 
+processes: 10 
+processes: 12 
+processes: 16 
