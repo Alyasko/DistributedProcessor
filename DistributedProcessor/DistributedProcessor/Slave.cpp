@@ -40,12 +40,12 @@ void Slave::Run()
 
 	if (buffer == SLAVE_LISTEN_FOR_ARRAY_SIZE)
 	{
-		Logger::Log("S: waiting for array size...\n"); // //cout << "S: waiting for array size...\n";
+		Logger::Log("S: waiting for array size...\n");
 
 	}
 	else
 	{
-		Logger::Log("S: broadcast error\n"); // //cout << "S: broadcast error\n";
+		Logger::Log("S: broadcast error\n");
 	}
 
 
@@ -54,7 +54,7 @@ void Slave::Run()
 	int arraySize = 0;
 	MPI_Recv(&arraySize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	Logger::Log("S: size is %d\n", DebugPrint, arraySize); // //cout << "S: size is " << arraySize << "\n";
+	Logger::Log("S: size is %d\n", DebugPrint, arraySize);
 
 	// Send array size received code.
 
@@ -67,7 +67,7 @@ void Slave::Run()
 	int *array = new int[arraySize];
 	MPI_Recv(array, arraySize, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-	Logger::Log("S: array received\n"); // //cout << "S: array received\n";
+	Logger::Log("S: array received\n");
 
 	// Send array received code.
 
@@ -79,14 +79,7 @@ void Slave::Run()
 	MPI_Recv(&buffer, 1, MPI_BYTE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	if (buffer == SLAVE_START_WORKING_CODE)
 	{
-		Logger::Log("S: working...\n"); // //cout << "S: working...\n";
-
-		/*for(int i = 0; i < arraySize; i++)
-		{
-		//cout << array[i] << " ";
-		}
-
-		Logger::Log("\n"); // //cout << "\n";*/
+		Logger::Log("S: working...\n");
 
 		// Processing.
 
@@ -120,7 +113,7 @@ void Slave::Run()
 			}
 		}
 
-		Logger::Log("S: ready\n"); // //cout << "S: ready\n";
+		Logger::Log("S: ready\n");
 
 		// End of processing.
 
@@ -128,10 +121,10 @@ void Slave::Run()
 
 		double endTime = omp_get_wtime();
 
-		Logger::Log("S: work time %f\n", ProductionPrint, endTime - startTime);
+		Logger::Log("S: work time %f\n", DebugPrint, endTime - startTime);
 	}
 	else
 	{
-		Logger::Log("S: incorrect start working code received\n"); // //cout << "S: incorrect start working code received\n";
+		Logger::Log("S: incorrect start working code received\n"); 
 	}
 }

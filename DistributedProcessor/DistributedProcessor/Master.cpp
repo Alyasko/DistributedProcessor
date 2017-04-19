@@ -26,7 +26,7 @@ Master::~Master()
 
 void Master::Run()
 {
-	Logger::Log("\n--- Master started ---\n"); // //cout << "\n--- Master started ---\n";
+	Logger::Log("\n--- Master started ---\n");
 
 	// Wait for slaves.
 	//byte buffer1;
@@ -38,7 +38,7 @@ void Master::Run()
 	{
 		WaitForSlaves(SLAVE_PRESENCE_CODE, "M: slave sent incorrect presence code\n");
 
-		Logger::Log("M: everybody is present\n"); // //cout << "M: everybody is present\n";
+		Logger::Log("M: everybody is present\n");
 
 		// Slaves listen for array size.
 
@@ -55,26 +55,16 @@ void Master::Run()
 	int worldSize = DistributedArrayProcessor::WorldSize;
 	int *unitSizes = new int[worldSize];
 
-	ArrayGenerator *generator = new ArrayGenerator();
-	generator->FrozenValues = true;
-	generator->MaxValue = 10;
-	//generator->Generate(array, ArraySize);
-
 	double startTime = omp_get_wtime();
 
 	if (ArraySize < 10)
 	{
-		for (int i = 0; i < ArraySize; i++)
-		{
-			//cout << array[i] << " ";
-		}
-
-		Logger::Log("\n"); // //cout << "\n";
+		PrintArray(array, ArraySize);
 	}
 
-	// Broadcast size.
+	// Send array size.
 
-	Logger::Log("M: sending array size\n"); // //cout << "M: sending array size\n";
+	Logger::Log("M: sending array size\n"); 
 
 	Utils::SplitArray(unitSizes, worldSize, ArraySize);
 
@@ -111,7 +101,7 @@ void Master::Run()
 
 		// Start working.
 
-		Logger::Log("M: start each slave\n"); // //cout << "M: start each slave\n";
+		Logger::Log("M: start each slave\n");
 
 		buffer = SLAVE_START_WORKING_CODE;
 
@@ -124,7 +114,7 @@ void Master::Run()
 
 	// Do own work.
 
-	Logger::Log("M: array size is %d\n", unitSizes[0]);
+	Logger::Log("M: array size is %d\n", DebugPrint, unitSizes[0]);
 
 	int myResult = 0;
 
@@ -146,11 +136,6 @@ void Master::Run()
 			}
 
 			myResult += ProcessData(array + startIndex, threadUnitSizes[i]);
-			int threadNum = omp_get_thread_num();
-			int threadsNum = omp_get_num_threads();
-
-			// Logger::Log("Start index: %d\n", startIndex);
-			// Logger::Log("Threads num: %d\n", threadsNum);
 		}
 	}
 	else
@@ -162,7 +147,7 @@ void Master::Run()
 
 	// Calculate data itself.
 
-	int masterResult = 0;//ProcessData(array, ArraySize);
+	int masterResult = 0; //ProcessData(array, ArraySize);
 
 	// Wait for results.
 
@@ -182,30 +167,27 @@ void Master::Run()
 	Logger::Log("M: results received!\n"); // //cout << "M: results received!\n";
 
 	double endTime = omp_get_wtime();
-	Logger::Log("M: work time %f\n", ProductionPrint, endTime - startTime);
 
-	Logger::Log("Array size: %d, World size %d, Time: %f\n", DebugPrint, ArraySize, DistributedArrayProcessor::WorldSize, endTime - startTime);
+	Logger::Log("M: work time %f\n", ProductionPrint, endTime - startTime);
+	Logger::Log("arr: %d pr: %d th: %d t: %f\n", StatisticsPrint, ArraySize, DistributedArrayProcessor::WorldSize, Master::ThreadsCount, endTime - startTime);
+
+	Logger::Log("Array size: %d, World size %d, Time: %d\n", DebugPrint, ArraySize, DistributedArrayProcessor::WorldSize, 5.5);
 
 	// Print results.
-
-	/*for (int i = 1; i < WorldSize; i++)
-	{
-	//cout << "Result " << i << ": " << results[i] << endl;
-	}*/
 
 	Logger::Log("M: control result is \t%d\n", DebugPrint, masterResult);
 	Logger::Log("M: slaves result is \t%d\n", DebugPrint, slavesResult);
 
 	if (masterResult == slavesResult)
 	{
-		Logger::Log("M: results are correct!\n", DebugPrint); // //cout << "M: results are correct!\n";
+		Logger::Log("M: results are correct!\n", DebugPrint); 
 	}
 	else
 	{
-		Logger::Log("M: results are NOT correct!\n"); // //cout << "M: results are NOT correct!\n";
+		Logger::Log("M: results are NOT correct!\n"); 
 	}
 
-	Logger::Log("M: done!\n"); // //cout << "M: done!\n";
+	Logger::Log("M: done!\n"); 
 }
 
 void Master::WaitForSlaves(byte requiredCode, char* errorMessage)
@@ -217,9 +199,18 @@ void Master::WaitForSlaves(byte requiredCode, char* errorMessage)
 		MPI_Recv(&groupBuffer[i], 1, MPI_BYTE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		if (groupBuffer[i] != requiredCode)
 		{
-			//cout << errorMessage;
+			Logger::Log(errorMessage);
 		}
 	}
 
 	delete[] groupBuffer;
+}
+
+void Master::PrintArray(int* array, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		Logger::Log("%d ", DebugPrint, array[i]);
+	}
+	Logger::Log("\n");
 }

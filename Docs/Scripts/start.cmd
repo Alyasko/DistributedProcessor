@@ -1,2 +1,2 @@
-mpiexec -n 2 "..\..\DistributedProcessor\Debug\DistributedProcessor.exe" 500000 8
+mpiexec -n 8 "..\..\DistributedProcessor\Debug\DistributedProcessor.exe" 5000000 12
 pause

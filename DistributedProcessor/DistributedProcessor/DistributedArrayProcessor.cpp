@@ -19,7 +19,6 @@ DistributedArrayProcessor::DistributedArrayProcessor(int worldSize, int rank)
 {
 	WorldSize = worldSize;
 	Rank = rank;
-	DebugMode = false;
 }
 
 DistributedArrayProcessor::~DistributedArrayProcessor()
@@ -39,7 +38,7 @@ void DistributedArrayProcessor::CheckDebugMode()
 		if (Rank == 0)
 		{
 			uint32_t pid = GetCurrentProcessId();
-			Logger::Log("M: My PID is %d\n", pid);
+			Logger::Log("M: My PID is %d\n", DebugPrint, pid);
 
 			int number = 0;
 

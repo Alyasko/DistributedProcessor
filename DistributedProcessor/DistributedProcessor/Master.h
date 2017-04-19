@@ -12,5 +12,6 @@ public:
 	static int ThreadsCount;
 private:
 	void WaitForSlaves(byte requiredCode, char* errorMessage);
+	void PrintArray(int* array, int size);
 };
 

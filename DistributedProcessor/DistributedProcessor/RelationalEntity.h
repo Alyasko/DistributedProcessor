@@ -23,7 +23,9 @@ protected:
 
 		for (int i = 0; i < size; i++)
 		{
-			result += array[i] * sin(sqrt(i * 1000 / size)) * cos(sqrt(i * 100 / size)) * sqrt(tan(i));
+			result += array[i] * sin(sqrt(i * 1000 / size)) * cos(sqrt(i * 100 / size)) * sqrt(tan(i)) * cos(sqrt(i * 100 / size)) / 2.0 * sqrt(array[i] * 10);
+			result += array[i] * sin(sqrt(i * 1000 / size)) * cos(sqrt(i * 100 / size)) * sqrt(tan(i)) * cos(sqrt(i * 100 / size)) / 2.0 * sqrt(array[i] * 10);
+			result += array[i] * sin(sqrt(i * 1000 / size)) * cos(sqrt(i * 100 / size)) * sqrt(tan(i)) * cos(sqrt(i * 100 / size)) / 2.0 * sqrt(array[i] * 10);
 		}
 
 		return result;

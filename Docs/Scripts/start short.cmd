@@ -1,33 +1,18 @@
-echo off 
-FOR %%n IN (1,2,4,8,10,12,16) DO (
-	echo processes: %%n >> out_test_1.txt
-	FOR %%t IN (1,2,4,8,10,12,16) DO (
-		mpiexec -n %%n "../../DistributedProcessor/Debug/DistributedProcessor.exe" 50000000 %%t >> out_test_pc_1.txt
-		timeout 1
-	)
-)
+@echo off
 
-FOR %%n IN (1,2,4,8,10,12,16) DO (
-	echo processes: %%n >> out_test_2.txt
-	FOR %%t IN (1,2,4,8,10,12,16) DO (
-		mpiexec -n %%n "../../DistributedProcessor/Debug/DistributedProcessor.exe" 50000000 %%t >> out_test_pc_2.txt
-		timeout 1
-	)
-)
+SET itn=20000000
 
-FOR %%n IN (1,2,4,8,10,12,16) DO (
-	echo processes: %%n >> out_test_3.txt
-	FOR %%t IN (1,2,4,8,10,12,16) DO (
-		mpiexec -n %%n "../../DistributedProcessor/Debug/DistributedProcessor.exe" 50000000 %%t >> out_test_pc_3.txt
-		timeout 1
-	)
-)
+echo Testing started
+echo Array size is %itn%
 
-FOR %%n IN (1,2,4,8,10,12,16) DO (
-	echo processes: %%n >> out_test_4.txt
-	FOR %%t IN (1,2,4,8,10,12,16) DO (
-		mpiexec -n %%n "../../DistributedProcessor/Debug/DistributedProcessor.exe" 50000000 %%t >> out_test_pc_4.txt
-		timeout 1
+FOR /L %%a IN (1,1,300) DO (
+	echo Iteration %%a
+	echo iteration %%a >> out/night_pc.txt
+	FOR %%n IN (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16) DO (
+		FOR %%t IN (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16) DO (
+			mpiexec -n %%n "../../DistributedProcessor/Debug/DistributedProcessor.exe" %itn% %%t >> out/night_pc.txt
+			timeout 1
+		)
 	)
 )
 
