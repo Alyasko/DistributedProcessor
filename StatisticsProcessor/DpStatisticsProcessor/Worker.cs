@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StatisticsProcessorBl;
+using StatisticsProcessorBl.Implementations;
 
 namespace DpStatisticsProcessor
 {
@@ -14,13 +15,15 @@ namespace DpStatisticsProcessor
 
         public Worker()
         {
-            _statisticsProcessor = new StatisticsProcessor();
+            _statisticsProcessor = new StatisticsProcessor(new ExcelGraphicsExporter());
         }
 
         public void Run()
         {
             _statisticsProcessor.InputFileName = GetFileNameFromArgs(FileNameType.InputFileName);
             _statisticsProcessor.OutputFileName = GetFileNameFromArgs(FileNameType.OutputFileName);
+
+            _statisticsProcessor.StartProcess();
         }
 
         private String GetFileNameFromArgs(FileNameType fileNameType)
@@ -35,10 +38,10 @@ namespace DpStatisticsProcessor
             switch (fileNameType)
             {
                 case FileNameType.InputFileName:
-                    fileName = GetFileNameSafe(1);
+                    fileName = GetFileNameSafe(0);
                     break;
                 case FileNameType.OutputFileName:
-                    fileName = GetFileNameSafe(2);
+                    fileName = GetFileNameSafe(1, true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(fileNameType), fileNameType, null);
@@ -47,22 +50,29 @@ namespace DpStatisticsProcessor
             return fileName;
         }
 
-        private String GetFileNameSafe(int argIndex)
+        private String GetFileNameSafe(int argIndex, bool bypassCheck = false)
         {
             if (argIndex < Arguments.Length)
             {
-                if (File.Exists(Arguments[argIndex]))
+                if (bypassCheck == false)
                 {
-                    return Arguments[argIndex];
+                    if (File.Exists(Arguments[argIndex]))
+                    {
+                        return Arguments[argIndex];
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("File does not exist.");
+                    }
                 }
                 else
                 {
-                    throw new FileNotFoundException("File does not exist.");
+                    return Arguments[argIndex];
                 }
             }
             else
             {
-                throw new IndexOutOfRangeException("Not element with such index in command line arguments."); 
+                throw new IndexOutOfRangeException("No element with such index in command line arguments."); 
             }
         }
 
