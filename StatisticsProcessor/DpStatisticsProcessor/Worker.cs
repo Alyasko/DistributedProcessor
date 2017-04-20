@@ -23,7 +23,30 @@ namespace DpStatisticsProcessor
             _statisticsProcessor.InputFileName = GetFileNameFromArgs(FileNameType.InputFileName);
             _statisticsProcessor.OutputFileName = GetFileNameFromArgs(FileNameType.OutputFileName);
 
+            bool? calculateAvg = GetCalculateAverage();
+
+            if (calculateAvg.HasValue)
+            {
+                _statisticsProcessor.CalculateAverage = calculateAvg.Value;
+            }
+
             _statisticsProcessor.StartProcess();
+        }
+
+        private bool? GetCalculateAverage()
+        {
+            String boolString = GetArgumentSafe(2);
+
+            bool result = false;
+
+            if (boolString != null && Boolean.TryParse(boolString, out result))
+            {
+                return new bool?(result);
+            }
+            else
+            {
+                return new bool?();
+            }
         }
 
         private String GetFileNameFromArgs(FileNameType fileNameType)
@@ -52,13 +75,15 @@ namespace DpStatisticsProcessor
 
         private String GetFileNameSafe(int argIndex, bool bypassCheck = false)
         {
-            if (argIndex < Arguments.Length)
+            String fileName = GetArgumentSafe(argIndex);
+
+            if (fileName != null)
             {
                 if (bypassCheck == false)
                 {
-                    if (File.Exists(Arguments[argIndex]))
+                    if (File.Exists(fileName))
                     {
-                        return Arguments[argIndex];
+                        return fileName;
                     }
                     else
                     {
@@ -67,12 +92,24 @@ namespace DpStatisticsProcessor
                 }
                 else
                 {
-                    return Arguments[argIndex];
+                    return fileName;
                 }
             }
             else
             {
                 throw new IndexOutOfRangeException("No element with such index in command line arguments."); 
+            }
+        }
+
+        private String GetArgumentSafe(int index)
+        {
+            if (index < Arguments.Length)
+            {
+                return Arguments[index];
+            }
+            else
+            {
+                return null;
             }
         }
 

@@ -11,61 +11,98 @@ namespace StatisticsProcessorBl.Implementations
 {
     public class ExcelGraphicsExporter : IStatisticsExporter
     {
+        private Excel.Application _xlApp;
+        private Excel.Workbook _xlWorkBook;
+        private Excel.Worksheet _xlWorkSheet;
+
+        private readonly object _misValue;
+
+        public ExcelGraphicsExporter()
+        {
+            _misValue = System.Reflection.Missing.Value;
+        }
+
         public void Export()
         {
-            Excel.Application xlApp;
-            Excel.Workbook xlWorkBook;
-            Excel.Worksheet xlWorkSheet;
-            object misValue = System.Reflection.Missing.Value;
+            _xlApp = new Excel.Application();
+            _xlWorkBook = _xlApp.Workbooks.Add(_misValue);
+            _xlWorkSheet = (Excel.Worksheet)_xlWorkBook.Worksheets[1];
 
-            xlApp = new Excel.Application();
-            xlWorkBook = xlApp.Workbooks.Add(misValue);
-            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets[1];
+            int iterCol = 1;
 
-            //add data 
-            xlWorkSheet.Cells[1, 1].Value = "";
-            xlWorkSheet.Cells[1, 2].Value = "Student1";
-            xlWorkSheet.Cells[1, 3].Value = "Student2";
-            xlWorkSheet.Cells[1, 4].Value = "Student3";
+            foreach (Iteration iteration in InputIterations)
+            {
+                PrintIterationCells(iteration, 1, iterCol);
 
-            xlWorkSheet.Cells[2, 1].Value = "Term1";
-            xlWorkSheet.Cells[2, 2].Value = "80";
-            xlWorkSheet.Cells[2, 3].Value = "65";
-            xlWorkSheet.Cells[2, 4].Value = "45";
+                iterCol += 11;
+            }
 
-            xlWorkSheet.Cells[3, 1].Value = "Term2";
-            xlWorkSheet.Cells[3, 2].Value = "78";
-            xlWorkSheet.Cells[3, 3].Value = "72";
-            xlWorkSheet.Cells[3, 4].Value = "60";
+            _xlWorkBook.SaveAs(OutputFileName, XlFileFormat.xlWorkbookNormal, _misValue, _misValue, _misValue, _misValue, XlSaveAsAccessMode.xlExclusive, _misValue, _misValue, _misValue, _misValue, _misValue);
+            _xlWorkBook.Close(true, _misValue, _misValue);
+            _xlApp.Quit();
 
-            xlWorkSheet.Cells[4, 1].Value = "Term3";
-            xlWorkSheet.Cells[4, 2].Value = "82";
-            xlWorkSheet.Cells[4, 3].Value = "80";
-            xlWorkSheet.Cells[4, 4].Value = "65";
+            ReleaseObject(_xlWorkSheet);
+            ReleaseObject(_xlWorkBook);
+            ReleaseObject(_xlApp);
+        }
 
-            xlWorkSheet.Cells[5, 1].Value = "Term4";
-            xlWorkSheet.Cells[5, 2].Value = "75";
-            xlWorkSheet.Cells[5, 3].Value = "82";
-            xlWorkSheet.Cells[5, 4].Value = "68";
-
+        private void PrintIterationChart(Iteration iteration, int row, int col)
+        {
             Excel.Range chartRange;
 
-            Excel.ChartObjects xlCharts = (Excel.ChartObjects)xlWorkSheet.ChartObjects(Type.Missing);
-            Excel.ChartObject myChart = (Excel.ChartObject)xlCharts.Add(10, 80, 300, 250);
+            Excel.ChartObjects xlCharts = (Excel.ChartObjects)_xlWorkSheet.ChartObjects();
+            Excel.ChartObject myChart = xlCharts.Add(100 + 45 * col, row * 15, 380, 250);
             Excel.Chart chartPage = myChart.Chart;
 
-            chartRange = xlWorkSheet.get_Range("A1", "d5");
-            chartPage.SetSourceData(chartRange, misValue);
-            chartPage.ChartType = XlChartType.xl3DColumnClustered;
+            String range = Utils.ConvertIndexToExcel(col);
 
-            xlWorkBook.SaveAs(OutputFileName, XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
-            xlWorkBook.Close(true, misValue, misValue);
-            xlApp.Quit();
-
-            ReleaseObject(xlWorkSheet);
-            ReleaseObject(xlWorkBook);
-            ReleaseObject(xlApp);
+            chartRange =  _xlWorkSheet.Range($"{range}{row + 1}", $"{range}{row + 1 + 16}");
+            chartPage.SetSourceData(chartRange);
+            chartPage.ChartType = XlChartType.xlLineMarkersStacked;
         }
+
+        private void PrintIterationCells(Iteration iteration, int row, int col)
+        {
+            int processCount = 0;
+            int iterRow = row;
+            int iterCol = col;
+
+            int dataRow = 0;
+
+            foreach (DataPoint dataPoint in iteration.DataPoints)
+            {
+                if (processCount != dataPoint.ProcessCount)
+                {
+                    if (processCount != 0)
+                    {
+                        iterRow += 19;
+                    }
+
+                    _xlWorkSheet.Cells[iterRow, iterCol].Value = "Processes";
+                    _xlWorkSheet.Cells[iterRow, iterCol + 1].Value = dataPoint.ProcessCount;
+                    _xlWorkSheet.Cells[iterRow + 1, iterCol].Value = "Threads";
+                    _xlWorkSheet.Cells[iterRow + 1, iterCol + 1].Value = "Time";
+
+                    dataRow = 2;
+
+                    processCount = dataPoint.ProcessCount;
+
+                    PrintIterationChart(iteration, iterRow, iterCol);
+                }
+
+                _xlWorkSheet.Cells[iterRow + dataRow, iterCol].Value = dataPoint.ThreadsCount;
+                _xlWorkSheet.Cells[iterRow + dataRow, iterCol + 1].Value = dataPoint.Time;
+
+                dataRow++;
+            }
+        }
+
+        private void PrintCellsHeader(Iteration iteration)
+        {
+            
+        }
+
+
 
         private void ReleaseObject(object obj)
         {
