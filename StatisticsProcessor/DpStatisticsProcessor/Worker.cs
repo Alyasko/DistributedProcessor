@@ -12,25 +12,35 @@ namespace DpStatisticsProcessor
     public class Worker
     {
         private readonly StatisticsProcessor _statisticsProcessor;
+        private readonly InfoPrinter _infoPrinter;
 
         public Worker()
         {
             _statisticsProcessor = new StatisticsProcessor(new ExcelGraphicsExporter());
+            _infoPrinter = new InfoPrinter();
         }
 
         public void Run()
         {
-            _statisticsProcessor.InputFileName = GetFileNameFromArgs(FileNameType.InputFileName);
-            _statisticsProcessor.OutputFileName = GetFileNameFromArgs(FileNameType.OutputFileName);
-
-            bool? calculateAvg = GetCalculateAverage();
-
-            if (calculateAvg.HasValue)
+            try
             {
-                _statisticsProcessor.CalculateAverage = calculateAvg.Value;
-            }
+                _statisticsProcessor.InputFileName = GetFileNameFromArgs(FileNameType.InputFileName);
+                _statisticsProcessor.OutputFileName = GetFileNameFromArgs(FileNameType.OutputFileName);
 
-            _statisticsProcessor.StartProcess();
+                bool? calculateAvg = GetCalculateAverage();
+
+                if (calculateAvg.HasValue)
+                {
+                    _statisticsProcessor.CalculateAverage = calculateAvg.Value;
+                }
+
+                _statisticsProcessor.StartProcess();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}" );
+                _infoPrinter.PrintHelp();
+            }
         }
 
         private bool? GetCalculateAverage()
